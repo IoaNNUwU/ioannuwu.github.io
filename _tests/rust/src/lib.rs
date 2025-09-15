@@ -1,0 +1,1 @@
+#![doc = include_str!("../../../_posts/2025-09-15-fn-fnmut-fnonce.md")]
