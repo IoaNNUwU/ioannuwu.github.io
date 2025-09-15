@@ -28,7 +28,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Run tests
       run: |
-        cd _tests\rust-tests
+        cd _tests/rust-tests
         cargo test --verbose --all-features
 
   build-Jekyll:
