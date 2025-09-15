@@ -1,4 +1,4 @@
-name: Deploy if tests passed
+name: Deploy
 
 on:
   push:
