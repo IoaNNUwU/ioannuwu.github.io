@@ -1,4 +1,4 @@
-name: Rust
+name: Test code in posts
 
 on:
   push:
@@ -11,16 +11,17 @@ env:
 
 jobs:
 
-  build-linux:
+  test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
-    - name: Build
     - name: Run tests
         cd _tests\rust-tests
-        cargo build --verbose --all-features
-    - name: Clippy
-      env:
-        RUSTFLAGS: "-D warnings"
-      run: cargo clippy --verbose --all-features
+        cargo test --verbose --all-features
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: JamesIves/github-pages-deploy-action@v4
