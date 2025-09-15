@@ -27,8 +27,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Run tests
-        cd _tests\rust-tests
-        cargo test --verbose --all-features
+    - run: cd _tests\rust-tests
+    - run: cargo test --verbose --all-features
 
   build-Jekyll:
     runs-on: ubuntu-latest
