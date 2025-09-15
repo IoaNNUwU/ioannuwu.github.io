@@ -3,7 +3,7 @@ use cargo_build as cargo;
 use std::{io::BufRead, path::Path};
 
 fn main() -> std::io::Result<()> {
-    let posts_folder = "../../_posts";
+    let posts_folder = "../../posts";
 
     cargo::rerun_if_changed(posts_folder);
 
