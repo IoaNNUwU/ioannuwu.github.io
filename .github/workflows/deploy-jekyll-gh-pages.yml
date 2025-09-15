@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy GitHub pages if all tests passed
 
 on:
   push:

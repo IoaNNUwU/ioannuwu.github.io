@@ -11,7 +11,7 @@ I hope you like it!
 
 ```rust
 fn main() {
-    let text = "Hello";
+    let text = "Hello";dd
 }
 ```
 
