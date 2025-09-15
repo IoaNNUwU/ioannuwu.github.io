@@ -16,6 +16,12 @@ fn main() -> std::io::Result<()> {
 
     for post in posts {
         let post = post?;
+
+        if post.path().extension().unwrap() != "md" {
+            continue;
+        }
+        let post_name = post.file_name().into_string().unwrap();
+
         let post_text = std::fs::read(post.path())?;
 
         let mut generated_post_text: String = post_text
@@ -23,8 +29,7 @@ fn main() -> std::io::Result<()> {
             .map(|line| format!("/// {}\n", line.unwrap()))
             .collect();
 
-        let post_mod_name = post.file_name().into_string().unwrap();
-        let post_mod_name = &post_mod_name.replace("-", "_")[..post_mod_name.len() - 3];
+        let post_mod_name = &post_name.replace("-", "_")[..post_name.len() - 3];
 
         generated_post_text.push_str(&format!("mod mod_{} {{}}\n", post_mod_name));
 
