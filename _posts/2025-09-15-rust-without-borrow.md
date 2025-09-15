@@ -15,7 +15,7 @@ fn main() {
 }
 ```
 
-```rust
+```rust,compile_fail
 fn main() {
     let text = "Hello";World
 }
