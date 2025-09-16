@@ -47,12 +47,9 @@ class ThemeSwitcher {
       const menuItems = document.querySelector(".main-menu-items");
       const options = menuItems.querySelectorAll(".theme-option");
 
-      const idx = THEMES.indexOf(this.currentTheme);
-
       options[THEMES.indexOf(this.currentTheme)].classList.add("current");
 
       for (let theme in options) {
-        console.log(theme.nodeName + ", " + this.currentTheme);
         if (theme.nodeName === this.currentTheme) {
           theme.classList.add("current");
         }
@@ -167,7 +164,7 @@ class ThemeSwitcher {
     }
 
     const selectorHTML = `
-            <li class="theme-selector">
+            <li class="theme-selector" style="display:inline-block">
                 <a href="#" class="theme-trigger" aria-expanded="false" aria-haspopup="true">
                     Theme ↓<span class="sr-only"> (click to change theme)</span>
                 </a>
@@ -182,7 +179,8 @@ class ThemeSwitcher {
             </li>
         `;
 
-    menuItems.insertAdjacentHTML("beforeend", selectorHTML);
+    let right_menu_items = document.getElementById("main-right");
+    right_menu_items.insertAdjacentHTML("beforeend", selectorHTML);
 
     // Add event listeners
     const trigger = menuItems.querySelector(".theme-trigger");

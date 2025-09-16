@@ -26,6 +26,15 @@
         background: repeating-linear-gradient(90deg, var(--accent-color), var(--accent-color) 2px, transparent 0, transparent 10px);
     }
 
+    &::before {
+        content: '';
+        max-width: 29px;
+        display: block;
+        margin-inline-start: 8px;
+        width: 100%;
+        background: repeating-linear-gradient(90deg, var(--accent-color), var(--accent-color) 2px, transparent 0, transparent 10px);
+    }
+
     a {
         flex: 0 0 auto;
         max-width: 100%;

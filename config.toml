@@ -12,7 +12,7 @@ compile_sass = true
 generate_feeds = true
 
 # The default author for pages
-author = "ioannuwu"
+author = "Bitwise | ioannuwu"
 
 # The taxonomies to be rendered for the site and their configuration of the default languages
 # Example:
@@ -53,7 +53,7 @@ bottom_footnotes = true
 [extra]
 close_responsive_menu_on_resize = true
 copy_button = true
-favicon = "images/logo.svg"
+favicon = "images/logo_one_dark.svg"
 fediverse_creator = "@ebkalderon@hachyderm.io"
 layout = "center"
 show_default_author = false

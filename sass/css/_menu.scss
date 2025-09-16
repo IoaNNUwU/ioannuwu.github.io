@@ -23,13 +23,14 @@
         display: flex;
         flex-wrap: wrap;
         gap: 10px 20px;
-        overflow: visible;
+        // overflow: visible;
         border: none;
         margin: 0;
         padding-bottom: 10px;
         width: 100%;
         background: unset;
         list-style: none;
+        /*
 
         @media (max-width: 684px) {
             display: none;
@@ -51,6 +52,7 @@
                 padding: 5px;
             }
         }
+            */
     }
 
     &-dropdown-button {

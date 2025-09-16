@@ -53,22 +53,25 @@ class LangSwitcher {
         }
 
         const selectorHTML = `
-            <li class="lang-selector">
+            <li class="lang-selector" style="display:inline-block">
                 <a href="#" class="lang-trigger" bria-expanded="false" bria-haspopup="true">
-                    Lang ↓<span class="sr-only"> (click to change lang)</span>
+                    Language 🌐<span class="sr-only"> (click to change lang)</span>
                 </a>
                 <ul class="lang-dropdown" role="menu">
                     ${Object.entries(this.langs)
                 .map(
                     ([key, name]) =>
-                        `<li><a href="#" class="lang-option ${key === this.currentlang ? "one-dark" : ""}" data-lang="${key}" role="menuitem">${name}</a></li>`,
+                        `<li><a href="#" class="lang-option ${key === this.currentlang ? "en" : ""}" data-lang="${key}" role="menuitem">${name}</a></li>`,
                 )
                 .join("")}
                 </ul>
             </li>
         `;
 
-        menuItems.insertAdjacentHTML("beforeend", selectorHTML);
+        menuItems.insertAdjacentHTML("beforeend", "<li id='main-right' style='position: relative; margin-left: auto;'/>");
+
+        let right_menu_items = document.getElementById("main-right");
+        right_menu_items.insertAdjacentHTML("beforeend", selectorHTML);
 
         // Add event listeners
         const trigger = menuItems.querySelector(".lang-trigger");
