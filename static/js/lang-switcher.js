@@ -19,9 +19,6 @@ class LangSwitcher {
     getCurrentLang() {
         const href = new URL(document.baseURI).href;
         const parts = href.split("/");
-        if (parts.length < 1) {
-            return "en";
-        }
         const last = parts[parts.length - 1];
         return last === "ru" ? "ru" : "en";
     }
@@ -34,7 +31,7 @@ class LangSwitcher {
         if (current == clickedLangName) return;
 
         if (clickedLangName == "ru") {
-            location.href = "ru";
+            location.href += "ru";
         }
         else {
             const href = new URL(document.baseURI).href;
@@ -52,18 +49,32 @@ class LangSwitcher {
             return;
         }
 
+        const path = new URL(document.baseURI).href;
+        console.log(path);
+        const parts = path.split("/");
+
+        let ru_selector;
+        let en_selector;
+
+        if (this.getCurrentLang() === "en") {
+            let path_ru = path + "/ru";
+            ru_selector = `<li><a href="${path_ru}" class="lang-option ru" data-lang="ru" role="menuitem">Русский</a></li>`;
+            en_selector = `<li><a href="#" class="lang-option en" data-lang="en" role="menuitem">English</a></li>`;
+        }
+        else {
+            let path_en = parts.slice(0, parts.length - 1).join("");
+            en_selector = `<li><a href="${path_en}" class="lang-option en" data-lang="en" role="menuitem">English</a></li>`;
+            ru_selector = `<li><a href="#" class="lang-option ru" data-lang="ru" role="menuitem">Русский</a></li>`;
+        }
+
         const selectorHTML = `
             <li class="lang-selector" style="display:inline-block">
                 <a href="#" class="lang-trigger" bria-expanded="false" bria-haspopup="true">
                     Language 🌐<span class="sr-only"> (click to change lang)</span>
                 </a>
                 <ul class="lang-dropdown" role="menu">
-                    ${Object.entries(this.langs)
-                .map(
-                    ([key, name]) =>
-                        `<li><a href="#" class="lang-option ${key === this.currentlang ? "en" : ""}" data-lang="${key}" role="menuitem">${name}</a></li>`,
-                )
-                .join("")}
+                    ${en_selector}
+                    ${ru_selector}
                 </ul>
             </li>
         `;
@@ -123,8 +134,6 @@ class LangSwitcher {
         });
 
         options.forEach((option) => {
-
-            // Apply lang permanently on click
             option.addEventListener("click", (e) => {
                 e.preventDefault();
                 const lang = e.target.dataset.lang;
