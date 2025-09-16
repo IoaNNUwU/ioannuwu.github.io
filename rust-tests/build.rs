@@ -38,7 +38,7 @@ fn main() -> std::io::Result<()> {
 
                     let post_mod_name =
                         &post_name.replace("-", "_").replace(" ", "_")[..post_name.len() - 3];
-                    generated_post_text.push_str(&format!("mod mod_{} {{}}\n", post_mod_name));
+                    generated_post_text.push_str(&format!("#[allow(non_snake_case)] mod mod_{} {{}}\n", post_mod_name));
                     generated_docs.push((post_mod_name.to_string(), generated_post_text));
                 }
             }
@@ -53,7 +53,7 @@ fn main() -> std::io::Result<()> {
 
             let post_mod_name =
                 &post_name.replace("-", "_").replace(" ", "_")[..post_name.len() - 3];
-            generated_post_text.push_str(&format!("mod mod_{} {{}}\n", post_mod_name));
+            generated_post_text.push_str(&format!("#[allow(non_snake_case)] mod mod_{} {{}}\n", post_mod_name));
             generated_docs.push((post_mod_name.to_string(), generated_post_text));
         } else {
             continue;
@@ -69,7 +69,7 @@ fn main() -> std::io::Result<()> {
 
     let lib_rs_text: String = generated_docs
         .iter()
-        .map(|(mod_name, _)| format!("mod file_{};\n", mod_name))
+        .map(|(mod_name, _)| format!("#[allow(non_snake_case)] mod file_{};\n", mod_name))
         .collect();
 
     let generated_lib_rs = Path::new(&out_dir).join("generated_lib.rs");
