@@ -1,4 +1,5 @@
 <nav class="main-menu" aria-label="Main Menu">
+    <button class="main-menu-dropdown-button" popovertarget="nav-menu">Menu</button>
     <ul id="nav-menu" class="main-menu-items" aria-label="Site Navigation" popover>
         {%- for item in config.extra.main_menu -%}
         {%- if item.url is starting_with("http") -%}
