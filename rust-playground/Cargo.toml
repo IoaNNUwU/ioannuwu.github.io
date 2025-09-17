@@ -1,11 +1,7 @@
 [package]
-name = "rust-tests"
+name = "rust-playground"
 version = "0.1.0"
 edition = "2024"
-
-[build-dependencies]
-cargo-build = { version = "0.7.3", features = ["macros"] }
-walkdir = "2"
 
 [dependencies]
 cargo-build = { version = "0.7.3", features = ["macros"] }

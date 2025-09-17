@@ -19,26 +19,29 @@ class LangSwitcher {
     getCurrentLang() {
         const href = new URL(document.baseURI).href;
         const parts = href.split("/");
-        const last = parts[parts.length - 1];
+
+        var last = parts[parts.length - 1];
+
+        var i = 2;
+        while (last == "") {
+            last = parts[parts.length - i];
+            i++;
+        }
         return last === "ru" ? "ru" : "en";
     }
 
-    clickLang(clickedLangName) {
-        if (!this.langs[clickedLangName]) return;
+    getCurrentPathPretty() {
+        const href = new URL(document.baseURI).href;
 
-        let current = this.getCurrentLang();
-
-        if (current == clickedLangName) return;
-
-        if (clickedLangName == "ru") {
-            location.href += "ru";
+        var n_slashes = 0;
+        while (true) {
+            let char = href[href.length - 1 - n_slashes];
+            if (char != "/") {
+                break;
+            }
+            n_slashes += 1;
         }
-        else {
-            const href = new URL(document.baseURI).href;
-            const en_href = href.split("/").slice(0, -1).join("/");
-            location.href = en_href;
-        }
-        
+        return href.slice(0, href.length - n_slashes);
     }
 
     createlangSelector() {
@@ -49,22 +52,18 @@ class LangSwitcher {
             return;
         }
 
-        const path = new URL(document.baseURI).href;
-        console.log(path);
-        const parts = path.split("/");
+        let curr_path = this.getCurrentPathPretty();
 
         let ru_selector;
         let en_selector;
 
         if (this.getCurrentLang() === "en") {
-            let path_ru = path + "/ru";
-            ru_selector = `<li><a href="${path_ru}" class="lang-option ru" data-lang="ru" role="menuitem">Русский</a></li>`;
-            en_selector = `<li><a href="#" class="lang-option en" data-lang="en" role="menuitem">English</a></li>`;
+            ru_selector = `<li><a href="${curr_path}/ru" class="lang-option ru" data-llang="ru" role="menuitem">Русский</a></li>`;
+            en_selector = `<li><a class="lang-option en" data-llang="en" role="menuitem" style="cursor: pointer">English</a></li>`;
         }
         else {
-            let path_en = parts.slice(0, parts.length - 1).join("");
-            en_selector = `<li><a href="${path_en}" class="lang-option en" data-lang="en" role="menuitem">English</a></li>`;
-            ru_selector = `<li><a href="#" class="lang-option ru" data-lang="ru" role="menuitem">Русский</a></li>`;
+            en_selector = `<li><a href="${curr_path.slice(0, curr_path.length - 2)}" class="lang-option en" data-llang="en" role="menuitem">English</a></li>`;
+            ru_selector = `<li><a class="lang-option ru" data-llang="ru" role="menuitem" style="cursor: pointer">Русский</a></li>`;
         }
 
         const selectorHTML = `
@@ -135,9 +134,7 @@ class LangSwitcher {
 
         options.forEach((option) => {
             option.addEventListener("click", (e) => {
-                e.preventDefault();
                 const lang = e.target.dataset.lang;
-                this.clickLang(lang);
 
                 // Update current selection highlighting
                 options.forEach((opt) => opt.classList.remove("current"));

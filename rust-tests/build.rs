@@ -1,80 +1,65 @@
 use cargo_build as cargo;
 
-use std::{io::BufRead, path::Path};
+use std::path::Path;
 
 type ModName = String;
 type ModText = String;
 
 fn main() -> std::io::Result<()> {
-    let posts_folder = "../content/blog/";
+    let posts_folder = "../content/";
 
     cargo::rerun_if_changed("always");
 
     let mut generated_docs: Vec<(ModName, ModText)> = Vec::new();
 
-    let posts = std::fs::read_dir(posts_folder)?;
 
-    for post in posts {
-        let post = post?;
-        if post.file_type().unwrap().is_dir() {
-            let dir_name = post.file_name().into_string().unwrap();
+    for file in walkdir::WalkDir::new(posts_folder) {
+        let file = file?;
+        let file_path = file.path().to_str().unwrap();
 
-            println!("dir: {dir_name}");
+        if file.path().extension().unwrap_or_default() == "md" {
+            let pretty_post_name = file_path
+                .replace(" ", "_")
+                .replace("-", "_")
+                .replace("/", "_")
+                .replace("\\", "_")
+                .replace(".", "_");
 
-            let posts = std::fs::read_dir(posts_folder)?;
-            
-            for post in posts {
-                let post = post?;
-                println!("file: {}", post.file_name().into_string().unwrap());
-                if post.path().extension().unwrap_or_default() == "md" {
-                    let post_name = post.file_name().into_string().unwrap();
-                    let post_name = format!("{dir_name}_{post_name}");
-                    let post_text = std::fs::read(post.path())?;
+            let pretty_post_name = &pretty_post_name[11..pretty_post_name.len() - 3];
 
-                    let mut generated_post_text: String = post_text
-                        .lines()
-                        .map(|line| format!("/// {}\n", line.unwrap()))
-                        .collect();
+            let post_text = std::fs::read_to_string(file.path())?;
 
-                    let post_mod_name =
-                        &post_name.replace("-", "_").replace(" ", "_")[..post_name.len() - 3];
-                    generated_post_text.push_str(&format!("#[allow(non_snake_case)] mod mod_{} {{}}\n", post_mod_name));
-                    generated_docs.push((post_mod_name.to_string(), generated_post_text));
-                }
-            }
-        } else if post.path().extension().unwrap_or_default() == "md" {
-            let post_name = post.file_name().into_string().unwrap();
-            let post_text = std::fs::read(post.path())?;
-
-            let mut generated_post_text: String = post_text
+            let mut pretty_post_text: String = post_text
                 .lines()
-                .map(|line| format!("/// {}\n", line.unwrap()))
+                .map(|line| {
+                    format!("/// {}\n", line)
+                })
                 .collect();
 
-            let post_mod_name =
-                &post_name.replace("-", "_").replace(" ", "_")[..post_name.len() - 3];
-            generated_post_text.push_str(&format!("#[allow(non_snake_case)] mod mod_{} {{}}\n", post_mod_name));
-            generated_docs.push((post_mod_name.to_string(), generated_post_text));
-        } else {
-            continue;
+            pretty_post_text.push_str(&format!(
+                "#[allow(non_snake_case)] mod {} {{}}\n",
+                pretty_post_name
+            ));
+
+            generated_docs.push((pretty_post_name.to_string(), pretty_post_text));
         }
     }
 
     let out_dir: String = std::env::var("OUT_DIR").unwrap();
 
     for (mod_name, mod_text) in &generated_docs {
-        let generated_mod_file = Path::new(&out_dir).join(&format!("file_{}.rs", mod_name));
+        let generated_mod_file = Path::new(&out_dir).join(&format!("{}.rs", mod_name));
         std::fs::write(&generated_mod_file, mod_text)?;
     }
 
     let lib_rs_text: String = generated_docs
         .iter()
-        .map(|(mod_name, _)| format!("#[allow(non_snake_case)] mod file_{};\n", mod_name))
+        .map(|(mod_name, _)| format!("#[allow(non_snake_case)] mod {};\n", mod_name))
         .collect();
 
     let generated_lib_rs = Path::new(&out_dir).join("generated_lib.rs");
 
     std::fs::write(&generated_lib_rs, lib_rs_text)?;
-
+    
     Ok(())
 }

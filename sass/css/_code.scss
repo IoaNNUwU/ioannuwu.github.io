@@ -47,6 +47,7 @@ pre[data-lang] {
         font-size: calc(var(--font-size) * 0.8);
         text-transform: uppercase;
         line-height: 21px;
+        color: var(--accent-color);
     }
 
     code[data-lang] {
@@ -67,6 +68,7 @@ pre[data-lang] {
             line-height: 21px;
             overflow: hidden;
             text-overflow: ellipsis;
+            color: var(--accent-color);
         }
 
         &:has(.copy-button)::before {

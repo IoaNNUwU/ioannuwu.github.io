@@ -38,10 +38,10 @@ highlight_code = true
 
 # The theme to use for code highlighting.
 # See below for list of allowed values.
-highlight_theme = "nord"
-# light: ascetic-white, ayu-light, base16-atelierdune-light, base16-ocean-light, bbedit, cheerfully-light, demain, inspired-github, ir-white, material-light, OneHalfLight, solarized-light, Tomorrow
+highlight_theme = "base16-ocean-dark"
 
-# dark: 1337, agola-dark, axar, ayu-dark, ayu-mirage, base16-ocean-dark, boron, charcoal, dimmed-fluid, dracula, gray-matter-dark, green, gruvbox-dark, kronuz, material-dark, monokai, nord, nyx-bold, one-dark, OneHalfDark, railsbase16-green-screen-dark, solarized-dark, subway-madrid, subway-moscow, two-dark, visual-studio-dark, zenburn
+# base16-ocean-dark
+# more: https://www.getzola.org/documentation/getting-started/configuration/
 
 # When set to "true", emoji aliases translated to their corresponding
 # Unicode emoji equivalent in the rendered Markdown files. (e.g.: :smile: => 😄)
@@ -50,11 +50,14 @@ render_emoji = true
 # Whether footnotes are rendered in the GitHub-style (at the bottom, with back references) or plain (in the place, where they are defined)
 bottom_footnotes = true
 
+# be able to link to specific header of an article
+insert_anchor_links = "right"
+
 [extra]
 close_responsive_menu_on_resize = true
 copy_button = true
 favicon = "images/logo_one_dark.svg"
-fediverse_creator = "@ebkalderon@hachyderm.io"
+# fediverse_creator = "@ebkalderon@hachyderm.io"
 layout = "center"
 show_default_author = false
 
@@ -63,17 +66,20 @@ main_menu = [
     { name = "archive", url = "archive", trailing_slash = true },
     { name = "tags", url = "tags", trailing_slash = true },
     { name = "projects", url = "projects", trailing_slash = true },
-    { name = "github", url = "https://github.com/ebkalderon/terminus", new_tab = true },
+    { name = "github", url = "https://github.com/ioannuwu", new_tab = true },
 ]
 
 socials = [
-    { name = "email", url = "mailto:hello@example.com" },
-    { name = "github", url = "https://github.com/ebkalderon" },
-    { name = "linkedin", url = "https://www.linkedin.com/in/ebkalderon" },
-    { name = "mastodon", url = "https://hachyderm.io/@ebkalderon" },
-    { name = "keyoxide", url = "https://keyoxide.org/d5ad5bd47835b0f0b0c3046c00ab4c0942dcba25" },
+    { name = "email", url = "ioannxd@gmail.com" },
+    { name = "github", url = "https://github.com/ioannuwu" },
+    { name = "telegram", url = "https://web.telegram.org/#@bitwiseuwu" },
+    # { name = "linkedin", url = "https://www.linkedin.com/in/ebkalderon" },
+    # { name = "mastodon", url = "https://hachyderm.io/@ebkalderon" },
+    # { name = "keyoxide", url = "https://keyoxide.org/d5ad5bd47835b0f0b0c3046c00ab4c0942dcba25" },
 ]
 
 [extra.responsive_images]
 widths = [640, 784, 1280, 1920, 2560]
 fallback_width = 1280
+
+# https://www.getzola.org/documentation/content/syntax-highlighting/
