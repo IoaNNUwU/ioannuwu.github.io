@@ -10,5 +10,6 @@
         {%- endif %}
         <li><a href="{{ url | safe }}" {%- if item.new_tab %} target="_blank" {%- endif -%}>{{ item.name }}</a></li>
         {%- endfor %}
+        <li id='main-right' style='position: relative; margin-left: auto;'/>
     </ul>
 </nav>

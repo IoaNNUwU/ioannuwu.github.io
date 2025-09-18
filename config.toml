@@ -50,8 +50,31 @@ render_emoji = true
 # Whether footnotes are rendered in the GitHub-style (at the bottom, with back references) or plain (in the place, where they are defined)
 bottom_footnotes = true
 
-# be able to link to specific header of an article
+# Be able to link to specific header of an article
 insert_anchor_links = "right"
+
+[languages.ru]
+title = "Bitwise | @ioannuwu"
+
+# When set to "true", a feed is automatically generated.
+generate_feeds = true
+
+# The taxonomies to be rendered for the site and their configuration of the default languages
+# Example:
+#     taxonomies = [
+#       {name = "tags", feed = true}, # each tag will have its own feed
+#       {name = "tags"}, # you can have taxonomies with the same name in multiple languages
+#       {name = "categories", paginate_by = 5},  # 5 items per page for a term
+#       {name = "authors"}, # Basic definition: no feed or pagination
+#     ]
+#
+taxonomies = [
+    { name = "tags", feed = true },
+    { name = "categories", feed = true, paginate_by = 5 },
+]
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
 
 [extra]
 close_responsive_menu_on_resize = true
@@ -66,17 +89,19 @@ main_menu = [
     { name = "archive", url = "archive", trailing_slash = true },
     { name = "tags", url = "tags", trailing_slash = true },
     { name = "projects", url = "projects", trailing_slash = true },
-    { name = "github", url = "https://github.com/ioannuwu", new_tab = true },
 ]
 
-socials = [
-    { name = "email", url = "ioannxd@gmail.com" },
-    { name = "github", url = "https://github.com/ioannuwu" },
-    { name = "telegram", url = "https://web.telegram.org/#@bitwiseuwu" },
-    # { name = "linkedin", url = "https://www.linkedin.com/in/ebkalderon" },
-    # { name = "mastodon", url = "https://hachyderm.io/@ebkalderon" },
-    # { name = "keyoxide", url = "https://keyoxide.org/d5ad5bd47835b0f0b0c3046c00ab4c0942dcba25" },
-]
+[[extra.socials]]
+name = "telegram"
+url = "https://web.telegram.org/#@bitwiseuwu"
+
+[[extra.socials]]
+name = "github"
+url = "https://github.com/ioannuwu"
+
+[[extra.socials]]
+name = "email"
+url = "mailto:ioannxd@gmail.com"
 
 [extra.responsive_images]
 widths = [640, 784, 1280, 1920, 2560]

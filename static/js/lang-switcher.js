@@ -17,31 +17,23 @@ class LangSwitcher {
     }
 
     getCurrentLang() {
-        const href = new URL(document.baseURI).href;
-        const parts = href.split("/");
-
-        var last = parts[parts.length - 1];
-
-        var i = 2;
-        while (last == "") {
-            last = parts[parts.length - i];
-            i++;
-        }
-        return last === "ru" ? "ru" : "en";
+        return this.getCurrentPathPretty().split("/")[0] === "ru" ? "ru" : "en";
     }
 
     getCurrentPathPretty() {
-        const href = new URL(document.baseURI).href;
-
+        var path = new URL(document.baseURI).pathname;
+        // Skip front slashes
         var n_slashes = 0;
         while (true) {
-            let char = href[href.length - 1 - n_slashes];
-            if (char != "/") {
+            let char = path[n_slashes];
+
+            if (char === "/") {
+                n_slashes++
+            } else {
                 break;
             }
-            n_slashes += 1;
         }
-        return href.slice(0, href.length - n_slashes);
+        return path.slice(n_slashes, path.length);
     }
 
     createlangSelector() {
@@ -51,18 +43,24 @@ class LangSwitcher {
             console.warn("Could not find menu to add lang selector");
             return;
         }
+        let pretty_path = this.getCurrentPathPretty();
 
-        let curr_path = this.getCurrentPathPretty();
+        let split = pretty_path.split("/");
+        let first = split[0];
+        
+        let base_path = new URL(document.baseURI);
 
         let ru_selector;
         let en_selector;
 
         if (this.getCurrentLang() === "en") {
-            ru_selector = `<li><a href="${curr_path}/ru" class="lang-option ru" data-llang="ru" role="menuitem">Русский</a></li>`;
+            let ru_path = new URL(base_path.origin) + "ru/" + pretty_path;
+            ru_selector = `<li><a href="${ru_path}" class="lang-option ru" data-llang="ru" role="menuitem">Русский</a></li>`;
             en_selector = `<li><a class="lang-option en" data-llang="en" role="menuitem" style="cursor: pointer">English</a></li>`;
         }
         else {
-            en_selector = `<li><a href="${curr_path.slice(0, curr_path.length - 2)}" class="lang-option en" data-llang="en" role="menuitem">English</a></li>`;
+            let en_path = new URL(base_path.origin) + pretty_path.slice(3, pretty_path.length);
+            en_selector = `<li><a href="${en_path}" class="lang-option en" data-llang="en" role="menuitem">English</a></li>`;
             ru_selector = `<li><a class="lang-option ru" data-llang="ru" role="menuitem" style="cursor: pointer">Русский</a></li>`;
         }
 
@@ -77,8 +75,6 @@ class LangSwitcher {
                 </ul>
             </li>
         `;
-
-        menuItems.insertAdjacentHTML("beforeend", "<li id='main-right' style='position: relative; margin-left: auto;'/>");
 
         let right_menu_items = document.getElementById("main-right");
         right_menu_items.insertAdjacentHTML("beforeend", selectorHTML);
