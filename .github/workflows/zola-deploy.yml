@@ -9,8 +9,19 @@ name: Build and deploy GH Pages
 
 jobs:
 
+  test-rust:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Run tests
+      run: |
+        cd rust-tests
+        cargo test --verbose --all-features
+
   build:
     runs-on: ubuntu-latest
+    depends-on: test-rust
     if: github.ref == 'refs/heads/main'
     steps:
       - name: checkout
