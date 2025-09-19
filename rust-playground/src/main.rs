@@ -1,7 +1,7 @@
 fn main() {
-    cargo_build::rustc_link_arg!(
-        bin "client": "stack-size=", { 8 * 1024 * 1024 }
-    );
+let text = String::from("Hello World");
+let mut fn_once_owning_closure = || drop(text);
+
+let fn_once_ref_mut = &mut fn_once_owning_closure;
+fn_once_ref_mut();
 }
-
-
