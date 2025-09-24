@@ -75,6 +75,14 @@ $max-layout-width: 864px;
     --footnote-color: rgba(26, 26, 26, 0.6);
 }
 
+// One Light hand made
+[data-theme="word"] {
+    --background-color: #ffffff;
+    --text-color: #1a1a1a;
+    --accent-color: #00209e;
+    --footnote-color: rgba(26, 26, 26, 0.6);
+}
+
 html {
     box-sizing: border-box;
     accent-color: var(--accent-color);

@@ -14,6 +14,7 @@ class ThemeSwitcher {
       "terminus": "🔥 Terminus",
       "oled-abyss": "🌑 OLED Abyss",
       "solar-flare": "☀️ Solar Flare",
+      "word": "📄 Doc"
     };
 
     this.currentTheme = this.getStoredTheme();
@@ -99,12 +100,12 @@ class ThemeSwitcher {
     const iconName = themeName === "one-dark" ? "logo_one_dark.svg"
       : themeName === "tokyo-night" ? "logo_tokio_night.svg"
         : themeName === "one-dark" ? "logo_one_dark.svg"
-          : themeName === "nord" ? "logo_nord.svg"
+          : themeName === "nord" || themeName === "word" ? "logo_nord.svg"
             : themeName === "gruvbox-dark" ? "logo_gruvbox.svg"
               : themeName === "terminus" ? "logo_gruvbox.svg"
                 : themeName === "oled-abyss" ? "logo_oled_abyss.svg"
                   : themeName === "solar-flare" ? "logo_solar_flare.svg"
-                    : "logo_gruvbox.svg";
+                    : "logo_one_dark.svg";
 
     const base_url = new URL(document.baseURI).origin;
     let advanced_url = new URL("images", base_url).href;
@@ -133,7 +134,7 @@ class ThemeSwitcher {
   updateCodeTheme(themeName) {
     const codeRef = document.getElementById("syntax-theme");
 
-    if (themeName == "solar-flare") {
+    if (themeName == "solar-flare" || themeName == "word") {
       codeRef.href = "/syntax-theme-light.css"
     }
     else if (themeName == "oled-abyss") {
