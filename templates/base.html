@@ -9,6 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{%- block title -%}{{ config.title }}{%- endblock -%}</title>
 
+    
+    <link id="syntax-theme" rel="stylesheet" type="text/css" href="/syntax-theme-dark.css"/>
+
+
     <link rel="preload" href="{{ get_url(path="fonts/FiraCode-Regular.woff2") }}" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="preload" href="{{ get_url(path="fonts/FiraCode-Bold.woff2") }}" as="font" type="font/woff2" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ get_url(path="css/style.css", cachebust=true) }}">

@@ -89,6 +89,8 @@ class ThemeSwitcher {
 
     // Update meta theme-color for browser chrome
     this.updateMetaThemeColor(themeName);
+
+    this.updateCodeTheme(themeName);
   }
 
   updateIcon(themeName) {
@@ -124,6 +126,22 @@ class ThemeSwitcher {
     // Apply preview theme (but don't save to localStorage)
     document.documentElement.setAttribute("data-theme", themeName);
     this.updateMetaThemeColor(themeName);
+
+    this.updateCodeTheme(themeName);
+  }
+
+  updateCodeTheme(themeName) {
+    const codeRef = document.getElementById("syntax-theme");
+
+    if (themeName == "solar-flare") {
+      codeRef.href = "/syntax-theme-light.css"
+    }
+    else if (themeName == "oled-abyss") {
+      codeRef.href = "/syntax-theme-abyss.css"
+    }
+    else {
+      codeRef.href = "/syntax-theme-dark.css"
+    }
   }
 
   restoreTheme() {

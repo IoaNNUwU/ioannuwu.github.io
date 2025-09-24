@@ -80,7 +80,7 @@ pre[data-lang] {
         mark {
             margin-inline: -10px;
             padding-inline: 10px;
-            color: unset;
+            background-color: color-mix(in srgb, var(--accent-color) 15%, rgb(255, 255, 255, 0) 70%)
         }
 
         table {

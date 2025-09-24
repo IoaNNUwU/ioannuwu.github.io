@@ -157,7 +157,8 @@ help: format specifiers use curly braces, consider adding a format specifier
 ```
 
 The difference between errors in `std` and [`cargo-build`](https://github.com/IoaNNUwU/cargo-build) is that you can easily google errors that happen in `println!` which makes solving them obvious. Beginner Rust tutorials teach how to use format specifiers `{}` in `println!`, but you have to trust docs and compiler errors when using third party crates. Compiler errors in this case are better because:
-1. IDEs automatically pick them up (providing for example `quick-fix`)
+
+1. IDEs automatically pick them up (providing `quick-fix` for example).
 2. User doesn't need to refer to docs often.
 
 Rust allows you to rely on compiler to catch errors which leads to compiler and type-based patterns such as `Typestate pattern`. This is the reason I think compile errors are such important part of every library.
