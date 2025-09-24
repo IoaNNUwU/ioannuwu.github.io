@@ -1,21 +1,21 @@
 .z-storage {
-    color: #db7b0e;
+    color: #b76100;
 }
 .z-keyword {
-    color: #db7b0e;
+    color: #b76100;
 }
 .z-operator {
-    color: #db7b0e;
+    color: #b76100;
 }
 .z-constant.z-placeholder {
-    color: #db7b0e;
+    color: #b76100;
 }
 
 .z-punctuation.z-terminator {
-    color: #db7b0e;
+    color: #b76100;
 }
 .z-punctuation.z-accessor {
-    color: #db7b0e;
+    color: #b76100;
 }
 
 .z-parameter {
@@ -39,7 +39,7 @@
     color: #d62e11;
 }
 .z-string {
-    color: #ac6e31;
+    color: #cb7b2b;
 }
 
 .z-lifetime {
@@ -63,4 +63,8 @@
 }
 .z-constant {
     color: #69b6ba;
+}
+
+.z-path {
+    color: #27a0c8;
 }
