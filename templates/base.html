@@ -4,7 +4,7 @@
 <!doctype html>
 <html lang="{{ lang }}">
 
-<head>
+<head style="color: 'red';">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{%- block title -%}{{ config.title }}{%- endblock -%}</title>
@@ -22,16 +22,7 @@
     {% endfor -%}
     {%- endif %}
 
-    {%- if config.extra.favicon %}
-    {% set image_meta = get_image_metadata(path=config.extra.favicon) -%}
-    <link rel="icon" id="icon" type="{{ image_meta.mime | safe }}" href="{{ get_url(path=config.extra.favicon) }}">
-    {%- if image_meta.mime is ending_with("png") %}
-    {% set resized_image = resize_image(path=config.extra.favicon, width=180, height=180, op="fit") -%}
-    <link rel="apple-touch-icon" id="icon" href="{{ resized_image.url | safe }}">
-    {%- endif -%}
-    {%- elif config.extra.favicon_emoji %}
-    <link rel="icon" id="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>{{ config.extra.favicon_emoji }}</text></svg>">
-    {%- endif %}
+    <link rel="icon" id="icon" href="../images/logo_one_dark.svg" style="filter: grayscale(100);">
 
     {%- if config.extra.close_responsive_menu_on_resize %}
     <script src="{{ get_url(path="js/auto-close-popover-on-resize.js", cachebust=true) }}" defer></script>

@@ -94,23 +94,32 @@ class ThemeSwitcher {
     this.updateCodeTheme(themeName);
   }
 
-  updateIcon(themeName) {
-    const icon = document.getElementById("icon")
+  icons = {
+    "one-dark": "logo_one_dark.svg",
+    "tokyo-night": "logo_tokio_night.svg",
+    "nord": "logo_nord.svg",
+    "gruvbox-dark": "logo_gruvbox.svg",
+    "terminus": "logo_gruvbox.svg",
+    "oled-abyss": "logo_oled_abyss.svg",
+    "solar-flare": "logo_solar_flare.svg",
+    "word": "logo_word.svg",
+  }
 
-    const iconName = themeName === "one-dark" ? "logo_one_dark.svg"
-      : themeName === "tokyo-night" ? "logo_tokio_night.svg"
-        : themeName === "one-dark" ? "logo_one_dark.svg"
-          : themeName === "nord" || themeName === "word" ? "logo_nord.svg"
-            : themeName === "gruvbox-dark" ? "logo_gruvbox.svg"
-              : themeName === "terminus" ? "logo_gruvbox.svg"
-                : themeName === "oled-abyss" ? "logo_oled_abyss.svg"
-                  : themeName === "solar-flare" ? "logo_solar_flare.svg"
-                    : "logo_one_dark.svg";
+  updateIcon(themeName) {
+    let iconName = this.icons[themeName] ?? "logo_one_dark.svg";
+
+    const icon = document.getElementById("icon")
 
     const base_url = new URL(document.baseURI).origin;
     let advanced_url = new URL("images", base_url).href;
-    const href = new URL(iconName, advanced_url + "/images").href;
+    let href = new URL(iconName, advanced_url + "/images").href;
 
+    const main_page_icon = document.getElementById("logo_on_main_page");
+
+    if (main_page_icon != null) {
+      main_page_icon.src = href;
+    }
+    
     icon.setAttribute("href", href)
   }
 

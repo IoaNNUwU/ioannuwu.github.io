@@ -1,11 +1,13 @@
 +++
 title = "Функциональные трейты :: Fn :: FnMut :: FnOnce"
-description = "Трейты `Fn`, `FnMut`, `FnOnce` в Rust."
+description = "Трейты `Fn`, `FnMut`, `FnOnce` вызывают проблемы у многих пользователей Rust, причём как у новичков, так и у людей с опытом. Давайте же попробуем разобраться в этих трейтах и понять разницу между ними."
 date = 2025-09-19
 # updated = 2025-09-17
 
+draft=true
+
 [taxonomies]
-tags = ["fn", "trait", "thread"]
+tags = ["fn", "trait", "threads"]
 categories = ["rust", "guide"]
 +++
 
@@ -15,8 +17,6 @@ categories = ["rust", "guide"]
 
 ```rust
 fn add_one(num: i32) -> i32 {  num + 1  }
-
-let add_one = |num| num + 1;
 
 fn double(num: i32) -> i32 {  num * 2  }
 
@@ -30,7 +30,7 @@ fn main() {
 В этом примере используется функциональный указатель. Как и любой другой указатель, он представляет собой число - адрес в оперативной памяти. Разница в том, что он указывает не на какую-либо величину, а на первый байт машинных инструкций функции.
 
 Это можно продемонстрировать так:
-```asm,linenos,hl_lines=1-2 6-13,name=машинный код исполняемого файла (упрощённый)              ‎,
+```asm,linenos,hl_lines=1-2 6-13,name=машинный код исполняемого файла (упрощённый),
 lea    eax, [rdi + 1]    ;add_one;
 ret
 mov    eax, edi          ;double;
@@ -55,7 +55,7 @@ call    qword ptr [rip + std::io::stdio::_print@GOTPCREL]
 
 Замыкание - это в первую очередь **структура**, поэтому о ней нужно рассуждать первостепенно как о структуре. При этом такая структура является анонимной - у неё есть тип, который Rust компилятор присваивает ей автоматически при инициализации, поэтому он не может быть назван явно. После этого поменять тип замыкания, а значит и присвоить его в другую переменную нельзя.
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 let mut one_closure = || {};
 let another_closure = || {};
 
@@ -152,7 +152,7 @@ struct OwningClosure(String);
 
 Одна из причин их появления - тот факт, что тип замыкания невозможно назвать, ведь анонимному типу замыкания даёт название компилятор:
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 let text = String::from("Hello World");
 let closure = || println!("{}", &text);
 
@@ -295,7 +295,7 @@ for num /*: &i32 */ in &nums {
 
 Давайте попробуем посмотреть на это с точки зрения определения трейтов. `FnOnce` поглощает `self` при вызове своего метода `call_once(self, args: Args)`. Это значит, что вызвать замыкание типа `FnOnce` невозможно через ссылку, только через переменную которая владеет замыканием:
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 let text = String::from("Hello World");
 let fn_once_owning_closure = || drop(text);
 

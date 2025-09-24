@@ -34,7 +34,7 @@ if std::env::var("HOST").is_ok() {
 ```
 
 Так как эта библиотека содержит большое количество макросов, я заметил проблему - плохие сообщения об ошибках. Давайте рассмотрим стандартные паттерны применения этих макросов и ошибки, связанные с ними.
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 cargo_build::rerun_if_changed!("main.c", "lib.c");
 //                             --------  ^^^^^^^ argument never used
 //                             |
@@ -58,7 +58,7 @@ cargo_build::rerun_if_changed!(
 
 Но оригинальный источник ошибки - макрос `format_args!`, который используется всеми макросами стандартной библиотеки, которые включают форматирование - например `println!` и `write!`. Давайте рассмотрим ошибки внутри этих макросов.
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 println!("Hello", "World");
 //       -------  ^^^^^^^ argument never used
 //       |
@@ -135,7 +135,7 @@ help: format specifiers use curly braces, consider adding a format specifier
 
 В остальных макросах изменения так же положительные, компилятор теперь показывает пример даже если синтаксис макроса является несколько необычным и отличается от стандартных `println!` и `format!`. Интересно, что для этого не пришлось никак менять код самой библиотеки. Rust компилятор, как оказалось, очень адаптивный и может собирать сообщения об ошибках из контекста, даже если ничего об этом контексте не знает.
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 cargo_build::rustc_link_arg!(
     bin "client": "stack-size=", { 8 * 1024 * 1024 }
 );

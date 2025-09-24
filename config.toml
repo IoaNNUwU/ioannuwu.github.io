@@ -3,7 +3,7 @@ base_url = "https://ioannuwu.github.io/"
 
 # The site title and description; used in feeds by default.
 title = "Bitwise | @ioannuwu"
-description = "Personal website"
+description = "Bitwise blog"
 
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = true
@@ -85,10 +85,10 @@ layout = "center"
 show_default_author = false
 
 main_menu = [
-    { name = "blog", url = "blog", trailing_slash = true },
-    { name = "archive", url = "archive", trailing_slash = true },
-    { name = "tags", url = "tags", trailing_slash = true },
-    { name = "projects", url = "projects", trailing_slash = true },
+    { name = "blog", url = "blog", trailing_slash = false },
+    { name = "projects", url = "projects", trailing_slash = false },
+    { name = "tags", url = "tags", trailing_slash = false },
+    { name = "videos", url = "videos", trailing_slash = false },
 ]
 
 [[extra.socials]]

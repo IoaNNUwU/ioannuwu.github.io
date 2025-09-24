@@ -34,7 +34,7 @@ if std::env::var("HOST").is_ok() {
 ```
 
 It makes heavy use of macros which leads to bad error messages. Lets look at common error patterns when using this library.
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 cargo_build::rerun_if_changed!("main.c", "lib.c");
 //                             --------  ^^^^^^^ argument never used
 //                             |
@@ -58,7 +58,7 @@ cargo_build::rerun_if_changed!(
 
 Original error source is `format_args!` macro used by every macro which needs formatting in `std` - for example `println!` and `write!`. Lets look at erros produced by those macros.
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 println!("Hello", "World");
 //       -------  ^^^^^^^ argument never used
 //       |
@@ -135,7 +135,7 @@ help: format specifiers use curly braces, consider adding a format specifier
 
 Errors in other macro calls did also improve. Compiler shows an example even if macro syntax is different from common ones like `println!` and `format!`. Interestingly enough, I did not need to change code of my crate. Rust compiler is very adaptive and can construct error messages from context even if it doesn't know anything about this context.
 
-```rust,name=compile error                                    ‎,
+```rust,name=compile error,
 cargo_build::rustc_link_arg!(
     bin "client": "stack-size=", { 8 * 1024 * 1024 }
 );

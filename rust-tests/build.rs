@@ -12,7 +12,6 @@ fn main() -> std::io::Result<()> {
 
     let mut generated_docs: Vec<(ModName, ModText)> = Vec::new();
 
-
     for file in walkdir::WalkDir::new(posts_folder) {
         let file = file?;
         let file_path = file.path().to_str().unwrap();
@@ -29,11 +28,14 @@ fn main() -> std::io::Result<()> {
 
             let post_text = std::fs::read_to_string(file.path())?;
 
+            if post_text.contains("draft=true") {
+                cargo::warning!("Ignored: `{}` because it is draft", file_path);
+                continue;
+            }
+
             let mut pretty_post_text: String = post_text
                 .lines()
-                .map(|line| {
-                    format!("/// {}\n", line)
-                })
+                .map(|line| format!("/// {}\n", line))
                 .collect();
 
             pretty_post_text.push_str(&format!(
@@ -60,6 +62,6 @@ fn main() -> std::io::Result<()> {
     let generated_lib_rs = Path::new(&out_dir).join("generated_lib.rs");
 
     std::fs::write(&generated_lib_rs, lib_rs_text)?;
-    
+
     Ok(())
 }

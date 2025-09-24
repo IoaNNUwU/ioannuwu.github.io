@@ -58,6 +58,8 @@ pre[data-lang] {
         &[data-name]::before {
             content: attr(data-name);
             position: absolute;
+            min-width: 80%;
+            text-align: center;
             top: 0;
             right: 0;
             display: block;
