@@ -2,7 +2,7 @@
 title = "Improving my library by contributing to Rust compiler"
 description = "My crate [`cargo-build`](https://github.com/IoaNNUwU/cargo-build) is a wrapper around `cargo` instructions available in build script `build.rs`. It makes heavy use of macros which leads to bad error messages. My pull request improved error messages inside Rust's standard library (including `println!` and `write!` macros) which improved error messages inside my library as well. Interestingly enough, there was no need to change crate's code."
 date = 2025-09-17
-# updated = 2025-09-17
+updated = 2025-09-29
 
 [taxonomies]
 tags = ["build-rs", "cargo-build", "rustc"]
@@ -66,6 +66,19 @@ println!("Hello", "World");
 ```
 
 This error can happen if beginner sees this macro, remembers there is no varargs in Rust and assumes `println!` takes multiple arguments and prints them one by one.
+
+{{ alert(type="note", text='
+`fmt.Println` function in `Go` programming language works this way.
+
+```go
+import "fmt"
+
+func main() {
+	fmt.Println("Hello", "World")
+}
+```
+|> Hello World
+') }}
 
 Compiler can make multiple assumptions:
 - User forgot first argument - format string `"{} {}"`.
