@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="ru">
+
+<head style="color: 'red';">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Как я улучшил свою библиотеку сделав пулл реквест в Rust компилятор | Bitwise | @ioannuwu</title>
+
+    
+    <link id="syntax-theme" rel="stylesheet" type="text/css" href="/syntax-theme-dark.css"/>
+
+
+    <link rel="preload" href="https://ioannuwu.github.io/fonts/FiraCode-Regular.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="preload" href="https://ioannuwu.github.io/fonts/FiraCode-Bold.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://ioannuwu.github.io/css/style.css?h=11596d67da44c4481995">
+
+    <link rel="icon" id="icon" href="../images/logo_one_dark.svg" style="filter: grayscale(100);">
+    <script src="https://ioannuwu.github.io/js/auto-close-popover-on-resize.js?h=4ef87d6fc7b98b22e044" defer></script>
+    <script src="https://ioannuwu.github.io/js/copy-code-to-clipboard.js?h=6aac77c47d552a0ac847" defer></script>
+    
+    <script src="https://ioannuwu.github.io/js/lang-switcher.js?h=90b05151579085b1ba57" defer></script>
+    <script src="https://ioannuwu.github.io/js/theme-switcher.js?h=e5d04311e0b4d7cf117d" defer></script>
+
+    <link rel="canonical" href="https://ioannuwu.github.io/ru/blog/improving-library-by-contributing-to-rust-compiler/">
+    <link rel="alternate" type="application/atom+xml" href="https://ioannuwu.github.io/atom.xml" title="Bitwise | @ioannuwu">
+    
+    <meta name="author" content="Bitwise | @ioannuwu">
+    <meta name="description" content="Моя библиотека cargo-build, используемая как обёртка над cargo-инструкциями во время работы билд скрипта build.rs страдала от плохих сообщений об ошибках. Мой PR в Rust компилятор улучшил сообщения об ошибках как в стандартной библиотеке Rust (макросы println!, write!), так и в моей библиотеке. При этом интересно, что код самой библиотеки даже не пришлось менять.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#211f1a">
+    <meta name="color-scheme" content="dark">
+
+    <meta property="og:title" content="Как я улучшил свою библиотеку сделав пулл реквест в Rust компилятор">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://ioannuwu.github.io/ru/blog/improving-library-by-contributing-to-rust-compiler/">
+    <meta property="og:description" content="Моя библиотека cargo-build, используемая как обёртка над cargo-инструкциями во время работы билд скрипта build.rs страдала от плохих сообщений об ошибках. Мой PR в Rust компилятор улучшил сообщения об ошибках как в стандартной библиотеке Rust (макросы println!, write!), так и в моей библиотеке. При этом интересно, что код самой библиотеки даже не пришлось менять.">
+    <meta property="og:site_name" content="Bitwise | @ioannuwu">
+    <meta property="og:updated_time" content="2025-09-29T15:58:56.346993403+00:00">
+    <meta property="article:published_time" content="2025-09-17T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-09-29T00:00:00+00:00">
+    <meta property="article:section" content="rust">
+    <meta property="article:tag" content="build-rs">
+    <meta property="article:tag" content="cargo-build">
+    <meta property="article:tag" content="rustc"></head>
+
+<body class="layout-center">
+    <header class="header">
+        <div class="header-container">
+            <span class="header-logo-container">
+                <a href="https://ioannuwu.github.io/ru/">
+                    <span class="logo">Bitwise | @ioannuwu</span>
+                </a>
+            </span>
+        </div>
+        <nav class="main-menu" aria-label="Main Menu">
+            <button class="main-menu-dropdown-button" popovertarget="nav-menu">Menu</button>
+            <ul id="nav-menu" class="main-menu-items" aria-label="Site Navigation" popover>
+                <li><a href="https://ioannuwu.github.io/blog">blog</a></li>
+                <li><a href="https://ioannuwu.github.io/projects">projects</a></li>
+                <li><a href="https://ioannuwu.github.io/tags">tags</a></li>
+                <li><a href="https://ioannuwu.github.io/videos">videos</a></li>
+                <li id='main-right' style='position: relative; margin-left: auto;'/>
+            </ul>
+        </nav>
+    </header>
+    <main id="main">
+        <article class="post content">
+            <header>
+                <h1 class="post-title">
+                    <a href="https://ioannuwu.github.io/ru/blog/improving-library-by-contributing-to-rust-compiler/">Как я улучшил свою библиотеку сделав пулл реквест в Rust компилятор</a>
+                </h1>
+                <ul class="post-meta">
+                    <li title="Published on 2025-09-17, last updated 2025-09-29"><time datetime="2025-09-17">2025.09.17</time>&nbsp;[Updated: <time datetime="2025-09-29">2025.09.29</time>]</li>
+                    <li role="separator" aria-hidden="true">::</li>
+                    <li title="598 words"><time datetime="PT3M">3 min</time> read</li>
+                </ul>
+                <div class="post-tags">
+                    <span>&lbrace;<a rel="tag" href="https://ioannuwu.github.io/ru/categories/rust/">rust</a>&rbrace;</span>
+                    <span>&lbrace;<a rel="tag" href="https://ioannuwu.github.io/ru/categories/project/">project</a>&rbrace;</span>
+                    <span role="separator">::</span>
+                    <span>#<a rel="tag" href="https://ioannuwu.github.io/ru/tags/build-rs/">build-rs</a></span>
+                    <span>#<a rel="tag" href="https://ioannuwu.github.io/ru/tags/cargo-build/">cargo-build</a></span>
+                    <span>#<a rel="tag" href="https://ioannuwu.github.io/ru/tags/rustc/">rustc</a></span>
+                </div>
+            </header>
+
+<h3 id="kak-ia-uluchshil-svoiu-biblioteku-sdelav-pull-rekvest-v-rust-kompiliator">Как я улучшил свою библиотеку сделав пулл реквест в Rust компилятор<a class="post-anchor" href="#kak-ia-uluchshil-svoiu-biblioteku-sdelav-pull-rekvest-v-rust-kompiliator" aria-label="Anchor link for: kak-ia-uluchshil-svoiu-biblioteku-sdelav-pull-rekvest-v-rust-kompiliator"><span aria-hidden="true">#</span></a>
+</h3>
+<p>Моя библиотека <a href="https://github.com/IoaNNUwU/cargo-build"><code>cargo-build</code></a> - типизированная обёртка над <code>cargo</code>-инструкциями во время работы билд скрипта <code>build.rs</code>.</p>
+<p>Пример её работы:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rustc_check_cfg<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>api_version<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">[</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>1<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>2<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>3<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-rust">]</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rustc_cfg<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>api_version<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>1<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust">
+</span><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rustc_link_lib<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">    <span class="z-storage z-type z-rust">static</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>+whole-archive<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>+verbatim<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>+bundle<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span> <span class="z-keyword z-operator z-assignment z-rust">=</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">      <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>nghttp2<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">      <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>libssl<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">      <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>libcrypto<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">      <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>mylib:{}<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>renamed_lib<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> env_var <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>HOST<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-keyword z-control z-rust">if</span> <span class="z-meta z-path z-rust">std<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">env<span class="z-punctuation z-accessor z-rust">::</span></span>var<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>HOST<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">is_ok</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>warning<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>Warning during compilation: {} is not set<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> env_var</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>error<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>Unable to finish compilation: {} is not set<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> env_var</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></code></pre>
+<p>Так как эта библиотека содержит большое количество макросов, я заметил проблему - плохие сообщения об ошибках. Давайте рассмотрим стандартные паттерны применения этих макросов и ошибки, связанные с ними.</p>
+<pre data-lang="rust" data-name="compile error" class="language-rust z-code"><code class="language-rust" data-lang="rust" data-name="compile error"><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rerun_if_changed<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>main.c<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>lib.c<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>                             --------  ^^^^^^^ argument never used
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>                             |
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>                             formatting specifier missing
+</span></span></code></pre>
+<p>В этом примере ошибка заключается в том, что макрос <code>rerun_if_changed!</code> воспринимает переданные аргументы как строку формата (то есть так же, как <code>println!</code>). Правильный вариант - перечислить аргументы через <code>;</code>:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rerun_if_changed<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>main.c<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>lib.c<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>                                     ^
+</span></span></code></pre>
+<p>Такой выбор формата аргумента вызван сильным сокращением синтаксиса в более сложных случаях, которые хотят сочетать переменное количество аргументов с форматированием, всё внутри одного вызова макроса. Множественные аргументы отделяются <code>;</code>, при этом каждый из них имеет такую же структуру как макрос <code>format!</code>, то есть список аргументов, разделённых запятой:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rerun_if_changed<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">    <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>{}.c<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span> <span class="z-meta z-path z-rust">std<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">env<span class="z-punctuation z-accessor z-rust">::</span></span>var<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>NAME_MAIN_C<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">unwrap_or_default</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">    <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>{}.c<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span> <span class="z-meta z-path z-rust">std<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">env<span class="z-punctuation z-accessor z-rust">::</span></span>var<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>NAME_LIB_C<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">unwrap_or_default</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<p>Но оригинальный источник ошибки - макрос <code>format_args!</code>, который используется всеми макросами стандартной библиотеки, которые включают форматирование - например <code>println!</code> и <code>write!</code>. Давайте рассмотрим ошибки внутри этих макросов.</p>
+<pre data-lang="rust" data-name="compile error" class="language-rust z-code"><code class="language-rust" data-lang="rust" data-name="compile error"><span class="z-source z-rust"><span class="z-support z-macro z-rust">println!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>Hello<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-separator z-rust">,</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>World<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>       -------  ^^^^^^^ argument never used
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>       |
+</span></span><span class="z-source z-rust"><span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span>       formatting specifier missing
+</span></span></code></pre>
+<p>Такая ошибка может возникнуть, если новичок увидел макрос, вспомнил что в Rust нет функций с переменным количеством аргументов и предположил, что <code>println!</code> принимает несколько аргументов, печатая их по очереди.</p>
+<section class="alert note" role="note" aria-labelledby="rdLg&#x2F;zp7">
+    <div class="alert-icon alert-icon-note"></div>
+    <div class="alert-content" role="presentation">
+        <strong id="rdLg&#x2F;zp7" class="alert-title" aria-hidden="true">NOTE</strong>
+        <p><code>fmt.Println</code> функция в языке <code>Go</code> работает именно так.</p>
+<pre data-lang="go" class="language-go z-code"><code class="language-go" data-lang="go"><span class="z-source z-go"><span class="z-keyword z-other z-import z-go">import</span> <span class="z-string z-quoted z-double z-go"><span class="z-punctuation z-definition z-string z-begin z-go">&quot;</span>fmt<span class="z-punctuation z-definition z-string z-end z-go">&quot;</span></span>
+</span><span class="z-source z-go">
+</span><span class="z-source z-go"><span class="z-storage z-type z-keyword z-function z-go">func</span> <span class="z-entity z-name z-function z-go">main</span><span class="z-punctuation z-section z-parens z-begin z-go">(</span><span class="z-punctuation z-section z-parens z-end z-go">)</span> <span class="z-meta z-block z-go"><span class="z-punctuation z-section z-braces z-begin z-go">{</span>
+</span></span><span class="z-source z-go"><span class="z-meta z-block z-go">	<span class="z-variable z-other z-go">fmt</span><span class="z-punctuation z-accessor z-dot z-go">.</span><span class="z-variable z-function z-go">Println</span><span class="z-punctuation z-section z-parens z-begin z-go">(</span><span class="z-string z-quoted z-double z-go"><span class="z-punctuation z-definition z-string z-begin z-go">&quot;</span>Hello<span class="z-punctuation z-definition z-string z-end z-go">&quot;</span></span><span class="z-punctuation z-separator z-go">,</span> <span class="z-string z-quoted z-double z-go"><span class="z-punctuation z-definition z-string z-begin z-go">&quot;</span>World<span class="z-punctuation z-definition z-string z-end z-go">&quot;</span></span><span class="z-punctuation z-section z-parens z-end z-go">)</span>
+</span></span><span class="z-source z-go"><span class="z-meta z-block z-go"><span class="z-punctuation z-section z-braces z-end z-go">}</span></span>
+</span></code></pre>
+<p>|&gt; Hello World</p>
+
+    </div>
+</section>
+<p>Тут можно сделать несколько предположений:</p>
+<ul>
+<li>Пользователь просто забыл первый аргумент - строку форматирования <code>"{} {}"</code>.</li>
+<li>Пользователь вообще не знает, как должен выглядеть вызов макроса <code>println!</code></li>
+<li>Пользователь знает, как выглядит вызов <code>println!</code>, но не знает, как выглядит указатель формата <code>{}</code>.</li>
+</ul>
+<p>Для последних двух случаев полезно было бы показать пример, чем я и решил заняться.</p>
+<h3 id="rust-kompiliator-teper-pokazyvaet-primer">Rust компилятор теперь показывает пример<a class="post-anchor" href="#rust-kompiliator-teper-pokazyvaet-primer" aria-label="Anchor link for: rust-kompiliator-teper-pokazyvaet-primer"><span aria-hidden="true">#</span></a>
+</h3>
+<p>В <code>rustc-1.92.0-nightly (2025-09-16)</code> компилятор теперь выдаёт следующую ошибку, добавилось сообщение <em>help: format specifiers use curly braces, consider adding a format specifier</em> и пример:</p>
+<pre data-lang="shell" class="language-shell z-code"><code class="language-shell" data-lang="shell"><span class="z-text z-plain">error: argument never used
+</span><span class="z-text z-plain"> --&gt; src\main.rs:2:23
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">2 |     println!(&quot;Hello&quot;, &quot;World&quot;);
+</span><span class="z-text z-plain">  |              -------  ^^^^^^^ argument never used
+</span><span class="z-text z-plain">  |              |
+</span><span class="z-text z-plain">  |              formatting specifier missing
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">help: format specifiers use curly braces, consider adding a format specifier
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">2 |     println!(&quot;Hello{}&quot;, &quot;World&quot;);
+</span><span class="z-text z-plain">  |                    ++
+</span></code></pre>
+<p>В дополнение, если пользователь всё же знает, как применять указатели формата <code>{}</code>, но при этом указал неверное их количество, компилятор теперь подсказывает, сколько именно не хватает:</p>
+<pre data-lang="shell" class="language-shell z-code"><code class="language-shell" data-lang="shell"><span class="z-text z-plain">error: multiple unused formatting arguments
+</span><span class="z-text z-plain"> --&gt; src\main.rs:2:49
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">2 |     println!(&quot;Format: {} {}&quot;, &quot;Hello&quot;, &quot;World&quot;, 1, 2, 3, 4);
+</span><span class="z-text z-plain">  |              ---------------                    ^  ^  ^  ^ argument never used
+</span><span class="z-text z-plain">  |              |                                  |  |  | 
+</span><span class="z-text z-plain">  |              |                                  |  |  argument never used
+</span><span class="z-text z-plain">  |              |                                  |  argument never used
+</span><span class="z-text z-plain">  |              |                                  argument never used
+</span><span class="z-text z-plain">  |              multiple missing formatting specifiers
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">  = note: consider adding 4 format specifiers
+</span></code></pre>
+<p>Заметьте последнюю строчку <em>note: consider adding 4 format specifiers</em>, которой раньше не было.</p>
+<p>Так как <code>format_args!</code> используется внутри всех форматирующих макросов стандартной библиотеки, это изменение затронуло все из них.</p>
+<h3 id="kak-zhe-izmenilis-oshibki-vnutri-cargo-build">Как же изменились ошибки внутри <a href="https://github.com/IoaNNUwU/cargo-build"><code>cargo-build</code></a>?<a class="post-anchor" href="#kak-zhe-izmenilis-oshibki-vnutri-cargo-build" aria-label="Anchor link for: kak-zhe-izmenilis-oshibki-vnutri-cargo-build"><span aria-hidden="true">#</span></a>
+</h3>
+<pre data-lang="shell" class="language-shell z-code"><code class="language-shell" data-lang="shell"><span class="z-text z-plain">error: argument never used
+</span><span class="z-text z-plain"> --&gt; src\main.rs:2:36
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">2 |     cargo_build::warning!(&quot;Hello&quot;, &quot;World&quot;);
+</span><span class="z-text z-plain">  |                           -------  ^^^^^^^ argument never used      
+</span><span class="z-text z-plain">  |                           |
+</span><span class="z-text z-plain">  |                           formatting specifier missing
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">help: format specifiers use curly braces, consider adding a format specifier
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">2 |     cargo_build::warning!(&quot;Hello{}&quot;, &quot;World&quot;);
+</span><span class="z-text z-plain">  |                                 ++
+</span></code></pre>
+<p>Макрос <code>warning!</code> работает так же, как и <code>println!</code>, поэтому эти изменения напрямую его коснулись.</p>
+<p>В остальных макросах изменения так же положительные, компилятор теперь показывает пример даже если синтаксис макроса является несколько необычным и отличается от стандартных <code>println!</code> и <code>format!</code>. Интересно, что для этого не пришлось никак менять код самой библиотеки. Rust компилятор, как оказалось, очень адаптивный и может собирать сообщения об ошибках из контекста, даже если ничего об этом контексте не знает.</p>
+<pre data-lang="rust" data-name="compile error" class="language-rust z-code"><code class="language-rust" data-lang="rust" data-name="compile error"><span class="z-source z-rust"><span class="z-meta z-path z-rust">cargo_build<span class="z-punctuation z-accessor z-rust">::</span></span>rustc_link_arg<span class="z-keyword z-operator z-logical z-rust">!</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust">    bin <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>client<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>stack-size=<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-separator z-rust">,</span> <span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">8</span> <span class="z-keyword z-operator z-arithmetic z-rust">*</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">1024</span> <span class="z-keyword z-operator z-arithmetic z-rust">*</span> <span class="z-constant z-numeric z-integer z-decimal z-rust">1024</span> </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span>
+</span></span><span class="z-source z-rust"><span class="z-meta z-group z-rust"></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<pre data-lang="shell" class="language-shell z-code"><code class="language-shell" data-lang="shell"><span class="z-text z-plain">error: argument never used
+</span><span class="z-text z-plain"> --&gt; src\main.rs:3:38
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">3 |         bin &quot;client&quot;: &quot;stack-size=&quot;, { 8 * 1024 * 1024 }
+</span><span class="z-text z-plain">  |                       -------------  ^^^^^^^^^^^^^^^^^^^ argument never used
+</span><span class="z-text z-plain">  |                       |
+</span><span class="z-text z-plain">  |                       formatting specifier missing
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">help: format specifiers use curly braces, consider adding a format specifier
+</span><span class="z-text z-plain">  |
+</span><span class="z-text z-plain">3 |         bin &quot;client&quot;: &quot;stack-size={}&quot;, { 8 * 1024 * 1024 }
+</span><span class="z-text z-plain">  |                                   ++
+</span></code></pre>
+<p>Я говорю отдельно о крейте <a href="https://github.com/IoaNNUwU/cargo-build"><code>cargo-build</code></a>, потому что ошибки внутри <code>println!</code> достаточно очевидны. Они легко гуглятся и во всех туториалах сразу учат, как именно применять указатели формата <code>{}</code> внутри <code>println!</code>. Однако в макросе из сторонней библиотеки пользователю остаётся полагаться только на документацию и ошибки компилятора. При этом ошибки компилятора - более хороший интерфейс, потому что он:</p>
+<ol>
+<li>Автоматически используется внутри IDE (например <code>quick-fix</code>).</li>
+<li>Не требует постоянного чтения документации.</li>
+</ol>
+<p>В Rust принято полагаться на компилятор, отсюда и происходят большое количество паттернов, например <code>Typestate pattern</code>. Поэтому я считаю сообщения об ошибках компиляции важной частью любой библиотеки.</p>
+<p>До этого изменения без прочтения документации <code>cargo-build</code>, пользователь не смог бы разобраться в синтаксисе её макросов, ведь применение <code>;</code> для множества аргументов - очень редкое явление. После этого изменения, наказание за непрочтение документации - всего лишь больше кода, ведь пользователь сразу поймёт, что макрос воспринимает аргумент как строку формата и способ исправить эту ошибку для него будет очевидным (не совсем оптимальным, но очевидным) - применить макрос несколько раз. Но если пользователь прочитает документацию, то сможет выяснить, что множественные аргументы разделяются <code>;</code>.</p>
+
+        </article>
+    </main>
+    <footer class="footer">
+        <address class="socials">
+            <ul>
+                <li>
+                    <a class="social-link" rel="me" href="https://web.telegram.org/#@bitwiseuwu" title="telegram">
+                        <svg role="img" aria-label="telegram">
+                            <use aria-hidden="true" href="https://ioannuwu.github.io/images/social_icons/telegram.svg#icon" />
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a class="social-link" rel="me" href="https://github.com/ioannuwu" title="github">
+                        <svg role="img" aria-label="github">
+                            <use aria-hidden="true" href="https://ioannuwu.github.io/images/social_icons/github.svg#icon" />
+                        </svg>
+                    </a>
+                </li>
+                <li>
+                    <a class="social-link" rel="me" href="mailto:ioannxd@gmail.com" title="email">
+                        <svg role="img" aria-label="email">
+                            <use aria-hidden="true" href="https://ioannuwu.github.io/images/social_icons/email.svg#icon" />
+                        </svg>
+                    </a>
+                </li>
+            </ul>
+        </address>
+        <p class="copyright">
+            <span>© <time>2025</time> Bitwise | @ioannuwu</span>
+            <span>Powered by <a href="https://www.getzola.org">Zola</a></span>
+            <span>Theme by <a href="https://github.com/ebkalderon/terminus">ebkalderon</a></span>
+        </p>
+        <p class="copyright" style="margin-top: 2%;">
+            <span>Found an error? report at this site's <a href="https://github.com/IoaNNUwU/ioannuwu.github.io"> GitHub repo</a></span>
+        </p>
+    </footer>
+</body>
+
+</html>

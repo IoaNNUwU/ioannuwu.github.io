@@ -1,0 +1,70 @@
+.z-storage {
+    color: #b76100;
+}
+.z-keyword {
+    color: #b76100;
+}
+.z-operator {
+    color: #b76100;
+}
+.z-constant.z-placeholder {
+    color: #b76100;
+}
+
+.z-punctuation.z-terminator {
+    color: #b76100;
+}
+.z-punctuation.z-accessor {
+    color: #b76100;
+}
+
+.z-parameter {
+    color: #677b8b;
+}
+.z-function.z-name.z-assembly {
+    color: #677b8b;
+}
+
+.z-trait.z-name {
+    color: #44bc39;
+}
+
+.z-name.z-struct {
+    color: #d62e11;
+}
+.z-function.z-name {
+    color: #d62e11;
+}
+.z-support.z-type {
+    color: #d62e11;
+}
+.z-string {
+    color: #cb7b2b;
+}
+
+.z-lifetime {
+    color: #5c7fff;
+}
+
+.z-support.z-function {
+    color: #25a2c5;
+}
+
+.z-comment {
+    color: #0eb628;
+}
+
+.z-macro {
+    color: #2b6eff;
+}
+
+.z-numeric {
+    color: #69b6ba;
+}
+.z-constant {
+    color: #69b6ba;
+}
+
+.z-path {
+    color: #27a0c8;
+}
